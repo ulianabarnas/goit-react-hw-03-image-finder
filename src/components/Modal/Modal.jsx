@@ -1,11 +1,31 @@
+import { Component } from "react";
+import { createPortal } from "react-dom";
 import { ModalStyled, Overlay } from "./Modal.styles";
 
-export default function Modal({src, alt, onClick}) {
-    return (
-        <Overlay onClick={onClick}>
-            <ModalStyled>
-                <img src={src} alt={alt} onClick={onClick}/>
-            </ModalStyled>
-        </Overlay>
-    )
+const modalRoot = document.querySelector('#modal-root');
+
+export default class Modal extends Component {
+    componentDidMount() {
+        window.addEventListener('keydown', this.closeModal);
+    };
+
+    componentWillUnmount () {
+        window.removeEventListener('keydown', this.closeModal)
+    };
+    
+    closeModal = ({ target, currentTarget, code }) => {
+        if (target === currentTarget || code === "Escape") {
+            this.props.onClick();
+        }
+    };
+
+    render() {
+        return createPortal(
+            <Overlay onClick={this.closeModal}>
+                <ModalStyled>
+                    {this.props.children}
+                </ModalStyled>
+            </Overlay>, modalRoot
+        )       
+    };
 }

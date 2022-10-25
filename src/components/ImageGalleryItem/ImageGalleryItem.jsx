@@ -25,7 +25,11 @@ export default class ImageGalleryItem extends Component {
             onClick={this.toggleModal}
           />
         </Item>
-        {isOpenModal && <Modal src={largeUrlImg} alt={alt}  />}
+        {isOpenModal && (
+          <Modal onClick={this.toggleModal}>
+            <img src={largeUrlImg} alt={alt} />
+          </Modal>
+        )}
       </>
     )
   }

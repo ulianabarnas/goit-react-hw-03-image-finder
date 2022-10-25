@@ -1,10 +1,11 @@
 import { Component } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import Button from "components/Button/Button";
 import ImageGallery from "components/ImageGallery/ImageGallery";
 import Loader from "components/Loader/Loader";
 import Searchbar from "components/Searchbar/Searchbar";
 import { AppStyled } from "./App.styles";
+import { fetchImages } from "services/api";
 
 export default class App extends Component {
   state = {
@@ -13,7 +14,8 @@ export default class App extends Component {
     page: 1,
     loading: false,
     error: null,
-    status: "idle",
+    totalPages: null,
+    // status: "idle",
   }
 
   componentDidUpdate(_, prevState) {
@@ -23,18 +25,12 @@ export default class App extends Component {
     const currentPage = this.state.page;
 
     if (prevQuery !== currentQuery || prevPage !== currentPage) {
-      this.setState({loading: true})
-      fetch(`https://pixabay.com/api/?q=${currentQuery}&page=${currentPage}&key=14611902-cba6e6d3c19977a925f1406cc&image_type=photo&orientation=horizontal&per_page=12`)
-        .then(response => {
-          if (response.ok) {
-            return response.json()
-          }
-
-          return Promise.reject(new Error(`Sorry, no results found for ${currentQuery}`))
-        })
-        .then(images => this.setState(prevState => ({ images: [...prevState.images, ...images.hits] })))
-        .catch(error => this.setState({ error }))
-        .finally(() => this.setState({ loading: false }));
+      this.setState({ loading: true })
+      
+      fetchImages(currentQuery, currentPage)
+      .then(images => this.setState(prevState => ({ images: [...prevState.images, ...images.hits] })))
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ loading: false }));
     }
   }
 
@@ -53,28 +49,34 @@ export default class App extends Component {
   }
 
   render() {
-    const { images, loading, error, status } = this.state;
+    const { images, loading, error } = this.state;
 
-    if (status === "idle") {
-      return <Searchbar onSubmit={this.handleSearchbarSubmit}/>
-    };
+    // if (status === "idle") {
+    //   return <Searchbar onSubmit={this.handleSearchbarSubmit}/>
+    // };
 
-    if (status === "pending") {
-      return <Loader />
-    };
+    // if (status === "pending") {
+    //   return (
+    //     <>
+    //       <Searchbar onSubmit={this.handleSearchbarSubmit} />
+    //       <Loader />
+    //     </>
+    //   )
+    // };
 
-    if (status === "resolved") {
-      return (
-        <AppStyled>
-          <ImageGallery images={images} />
-          <Button onClick={this.loadMore} />
-        </AppStyled>
-      )
-    };
+    // if (status === "resolved") {
+    //   return (
+    //     <AppStyled>
+    //       <Searchbar onSubmit={this.handleSearchbarSubmit}/>
+    //       <ImageGallery images={images} />
+    //       <Button onClick={this.loadMore} />
+    //     </AppStyled>
+    //   )
+    // };
 
-    if (status === "rejected") {
-      return <p>{error.message}</p>
-    };    
+    // if (status === "rejected") {
+    //   return <p>{error.message}</p>
+    // };    
     
     return (
       <AppStyled>
