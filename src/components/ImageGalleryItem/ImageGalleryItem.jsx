@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+import urlPropType from 'url-prop-type';
 import Modal from "components/Modal/Modal";
 import { Component } from "react";
 import { Image, Item } from "./ImageGalleryItem.styles";
@@ -31,6 +33,12 @@ export default class ImageGalleryItem extends Component {
           </Modal>
         )}
       </>
-    )
-  }
+    );
+  };
+};
+
+ImageGalleryItem.propTypes = {
+  smallUrlImg: urlPropType.isRequired,
+  largeUrlImg: urlPropType.isRequired,
+  alt: PropTypes.string.isRequired,
 }
